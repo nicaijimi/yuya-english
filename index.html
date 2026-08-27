@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F5F7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="语芽">
+<title>语芽 · 亲子英语启蒙</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="splash">
+  <div class="splash-inner">
+    <svg class="bear splash-chick" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M100 40 L91 18 L104 31 L114 15 L117 36 Z" fill="#FFC93C"/>
+      <circle cx="100" cy="110" r="62" fill="#FFD93D" stroke="#F2B705" stroke-width="3"/>
+      <ellipse cx="100" cy="126" rx="40" ry="36" fill="#FFF3C4"/>
+      <ellipse cx="44" cy="114" rx="13" ry="22" fill="#FFC93C" stroke="#F2B705" stroke-width="2"/>
+      <ellipse cx="156" cy="114" rx="13" ry="22" fill="#FFC93C" stroke="#F2B705" stroke-width="2"/>
+      <circle cx="80" cy="100" r="9" fill="#1D1D1F"/>
+      <circle cx="120" cy="100" r="9" fill="#1D1D1F"/>
+      <circle cx="83" cy="97" r="3" fill="#FFFFFF"/>
+      <circle cx="123" cy="97" r="3" fill="#FFFFFF"/>
+      <circle cx="64" cy="120" r="7" fill="#FFB3C1" opacity=".85"/>
+      <circle cx="136" cy="120" r="7" fill="#FFB3C1" opacity=".85"/>
+      <path class="mouth-closed" d="M93 116 L107 116 L100 125 Z" fill="#FF9F1C" stroke="#E8870B" stroke-width="1"/>
+      <g class="mouth-open"><path d="M91 113 L109 113 L100 120 Z" fill="#FF9F1C"/><path d="M91 120 L109 120 L100 129 Z" fill="#E8870B"/></g>
+    </svg>
+    <div class="splash-banner">英语时间到！</div>
+    <div class="splash-sub">和妈妈一起玩 5 分钟英语吧 🐤</div>
+  </div>
+</div>
+<div class="app">
+
+  <section id="screen-home" class="screen active">
+    <header class="hero">
+      <div class="hero-eyebrow">语芽</div>
+      <h1 class="hero-title" id="heroTitle">今天想学点什么？</h1>
+      <p class="hero-sub" id="heroSub">每天 10 分钟，妈妈和宝宝一起开口说。</p>
+    </header>
+
+    <div class="streak-card card">
+      <div class="streak-emoji">🔥</div>
+      <div>
+        <div class="streak-num">连续学习 <b id="streakDays">0</b> 天</div>
+        <div class="streak-sub" id="streakText">今天还没学习，现在开始吧。</div>
+      </div>
+    </div>
+
+    <div class="today-card" id="todayCard">
+      <div class="today-tag" id="todayTag">今日推荐</div>
+      <div class="today-row">
+        <div class="today-emoji" id="todayEmoji">🌅</div>
+        <div>
+          <div class="today-title" id="todayTitle">第1课 · 早晨起床</div>
+          <div class="today-sub" id="todaySub">8 个亲子日常句子</div>
+        </div>
+      </div>
+      <div class="today-btn" id="todayBtn">开始学习</div>
+    </div>
+
+    <div class="section">
+      <div class="btn-row">
+        <button class="pill pill-secondary pill-block" id="btnQuickCoach">🎤 和小鸡口语对话</button>
+        <button class="pill pill-secondary pill-block" id="btnQuickSongs">🎵 英语儿歌</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">全部课程</h2>
+      <div class="grid-2" id="lessonGrid"></div>
+    </div>
+
+    <p class="hint-text">每个句子点一下就能听到发音，先听会，再开口。</p>
+  </section>
+
+  <section id="screen-songs" class="screen">
+    <header class="hero">
+      <div class="hero-eyebrow">英语儿歌</div>
+      <h1 class="hero-title">最受孩子喜欢的经典童谣</h1>
+      <p class="hero-sub">点进去跟着旋律哼，或逐句朗读学发音。</p>
+    </header>
+    <div class="section" id="songList"></div>
+    <p class="hint-text">旋律用经典童谣曲调播放，歌词可逐句跟读。</p>
+  </section>
+
+  <section id="screen-chat" class="screen">
+    <div class="bear-wrap">
+      <svg class="bear" id="bear" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="小鸡叽叽">
+        <path d="M100 40 L91 18 L104 31 L114 15 L117 36 Z" fill="#FFC93C"/>
+        <circle cx="100" cy="110" r="62" fill="#FFD93D" stroke="#F2B705" stroke-width="3"/>
+        <ellipse cx="100" cy="126" rx="40" ry="36" fill="#FFF3C4"/>
+        <ellipse cx="44" cy="114" rx="13" ry="22" fill="#FFC93C" stroke="#F2B705" stroke-width="2"/>
+        <ellipse cx="156" cy="114" rx="13" ry="22" fill="#FFC93C" stroke="#F2B705" stroke-width="2"/>
+        <circle cx="80" cy="100" r="9" fill="#1D1D1F"/>
+        <circle cx="120" cy="100" r="9" fill="#1D1D1F"/>
+        <circle cx="83" cy="97" r="3" fill="#FFFFFF"/>
+        <circle cx="123" cy="97" r="3" fill="#FFFFFF"/>
+        <circle cx="64" cy="120" r="7" fill="#FFB3C1" opacity=".85"/>
+        <circle cx="136" cy="120" r="7" fill="#FFB3C1" opacity=".85"/>
+        <path class="mouth-closed" d="M93 116 L107 116 L100 125 Z" fill="#FF9F1C" stroke="#E8870B" stroke-width="1"/>
+        <g class="mouth-open">
+          <path d="M91 113 L109 113 L100 120 Z" fill="#FF9F1C"/>
+          <path d="M91 120 L109 120 L100 129 Z" fill="#E8870B"/>
+        </g>
+      </svg>
+      <div class="bear-status" id="bearStatus">你好，我是小鸡叽叽 👋</div>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="lang-seg">
+        <button class="lang-btn active" id="langEn">English</button>
+        <button class="lang-btn" id="langZh">中文</button>
+        <button class="lang-btn" id="btnOpenCoach">🎤 口语教练</button>
+      </div>
+      <div class="chat-inputbar">
+        <button class="mic-btn" id="btnMic" aria-label="按住说话">🎙️</button>
+        <input class="chat-input" id="chatInput" type="text" placeholder="打字或按话筒说话…" autocomplete="off">
+        <button class="send-btn" id="btnSend">发送</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-profile" class="screen">
+    <header class="hero">
+      <div class="hero-eyebrow">我的</div>
+      <h1 class="hero-title">我们的学习小屋</h1>
+      <p class="hero-sub">看看已经学会多少啦。</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="statLessons">0/12</div><div class="stat-label">已学课程</div></div>
+      <div class="stat"><div class="stat-num" id="statStars">0</div><div class="stat-label">获得星星</div></div>
+      <div class="stat"><div class="stat-num" id="statPhrases">0</div><div class="stat-label">学会句子</div></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">贴纸收藏柜</h2>
+      <div class="sticker-wall" id="stickerWall"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">设置</h2>
+      <div class="card setting-row">
+        <div class="setting-label">发音语速</div>
+        <div class="seg">
+          <button class="seg-btn" id="rateSlow">慢速（推荐）</button>
+          <button class="seg-btn" id="rateNormal">标准</button>
+        </div>
+      </div>
+      <div class="card setting-row">
+        <div class="setting-label">英文发音人</div>
+        <select class="voice-select" id="voiceSelect"></select>
+      </div>
+      <div class="card setting-row">
+        <div class="setting-label">中文发音人</div>
+        <select class="voice-select" id="voiceSelectZh"></select>
+      </div>
+      <div class="card setting-row">
+        <div class="setting-label">安装到手机桌面</div>
+        <button class="pill pill-secondary pill-block" id="btnInstall">安装 PWA（可离线使用）</button>
+        <p class="hint-text" id="installHint">需要先通过浏览器访问（见使用说明）。</p>
+      </div>
+      <div class="card setting-row">
+        <div class="setting-label">学习记录</div>
+        <button class="pill pill-secondary pill-block" id="btnReset">清空学习记录</button>
+      </div>
+    </div>
+
+    <p class="about" id="about">语芽 · 亲子英语启蒙<br>12 个场景 · 96 个亲子句子 · 12 首经典童谣<br>数据只保存在本机浏览器，不会上传</p>
+  </section>
+
+  <section class="page" id="page-lesson">
+    <div class="topbar">
+      <button class="back-btn" id="btnBackLesson">‹ 返回</button>
+      <div class="topbar-title" id="lessonTitle">第1课</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="learnFill"></div></div>
+    <div class="progress-text" id="learnProg">已听 0 / 8 句</div>
+    <div class="voice-tip" id="voiceTip">没有检测到英文发音，建议用 Chrome 或 Safari 打开。</div>
+    <div id="cardList"></div>
+    <div class="btn-row">
+      <button class="pill pill-primary pill-block" id="btnStartPractice">开始跟读练习</button>
+      <button class="pill pill-secondary pill-block" id="btnGoQuiz2">直接闯关</button>
+    </div>
+  </section>
+
+  <section class="page" id="page-practice">
+    <div class="topbar">
+      <button class="back-btn" id="btnBackPractice">‹ 返回</button>
+      <div class="topbar-title" id="practiceTitle">跟读练习</div>
+    </div>
+    <div class="dots" id="practiceDots"></div>
+    <div class="practice-card">
+      <div class="p-en-big" id="pEn">Good morning!</div>
+      <div class="p-hint-big" id="pHint">古德 莫宁</div>
+      <div class="p-zh-big" id="pZh">早上好！</div>
+      <button class="pill pill-primary" id="btnPlayPhrase" style="margin-top:18px">🔊 听一听</button>
+    </div>
+    <div class="practice-actions">
+      <button class="pill pill-secondary" id="btnReplay">再听一遍</button>
+      <button class="pill pill-primary" id="btnNext">我学会啦</button>
+    </div>
+    <div class="overlay" id="practiceDone">
+      <div class="ov-emoji" id="doneSticker">🎉</div>
+      <div class="ov-title">本课学完啦！</div>
+      <div class="ov-sub">贴纸已收入收藏柜<br>接下来去闯关拿星星吧</div>
+      <div class="ov-btns">
+        <button class="pill pill-primary pill-block" id="btnGoQuiz">去闯关拿星星</button>
+        <button class="pill pill-secondary pill-block" id="btnDoneHome">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-quiz">
+    <div class="topbar">
+      <button class="back-btn" id="btnBackQuiz">‹ 返回</button>
+      <div class="topbar-title">闯关游戏</div>
+    </div>
+    <div class="quiz-progress">
+      <span id="quizNum">第 1 / 5 题</span>
+      <span class="quiz-stars" id="quizStars"></span>
+    </div>
+    <div class="quiz-box">
+      <div class="quiz-prompt" id="quizPrompt">听一听，选出中文意思</div>
+      <button class="pill pill-primary" id="btnListen" style="margin-top:14px">🔊 点这里听发音</button>
+    </div>
+    <div class="qopts" id="quizOptions"></div>
+    <div class="overlay" id="quizDone">
+      <div class="ov-emoji">🏆</div>
+      <div class="ov-title" id="quizDoneTitle">太棒了！</div>
+      <div class="ov-sub" id="quizDoneScore">答对 5 / 5 题</div>
+      <div class="ov-btns">
+        <button class="pill pill-primary pill-block" id="btnQuizAgain">再玩一次</button>
+        <button class="pill pill-secondary pill-block" id="btnQuizHome">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-song">
+    <div class="topbar">
+      <button class="back-btn" id="btnBackSong">‹ 返回</button>
+      <div class="topbar-title">儿歌</div>
+    </div>
+    <div class="song-hero">
+      <div class="song-emoji" id="songEmoji">⭐</div>
+      <div class="song-name" id="songTitle">Twinkle Twinkle Little Star</div>
+      <div class="song-sub" id="songSub">经典童谣</div>
+    </div>
+    <div class="lyric-list" id="songLyrics"></div>
+    <div class="btn-row">
+      <button class="pill pill-primary pill-block" id="btnPlayMelody">▶ 播放旋律</button>
+      <button class="pill pill-secondary pill-block" id="btnReadSong">🔊 逐句朗读</button>
+    </div>
+    <p class="hint-text" id="songNote">经典童谣曲调与歌词为公版，可在家庭学习中使用。</p>
+  </section>
+
+  <section class="page" id="page-coach">
+    <div class="topbar">
+      <button class="back-btn" id="btnBackCoach">‹ 返回</button>
+      <div class="topbar-title">口语教练</div>
+    </div>
+    <div class="coach-phrase">
+      <div class="coach-en" id="coachEn">Good morning!</div>
+      <div class="coach-zh" id="coachZh">早上好！</div>
+    </div>
+    <div class="btn-row" style="padding-bottom:8px">
+      <button class="pill pill-primary pill-block" id="btnCoachListen">🎙️ 我来说一遍</button>
+      <button class="pill pill-secondary pill-block" id="btnCoachSpeak">🔊 听标准发音</button>
+    </div>
+    <div class="coach-result" id="coachResult"></div>
+    <div class="btn-row">
+      <button class="pill pill-secondary pill-block" id="btnCoachNext">换一句 →</button>
+    </div>
+    <p class="hint-text" id="coachHint">按住话筒说出上方句子，小鸡会帮你对照纠正。语音识别需要 Chrome / Safari 的麦克风权限。</p>
+  </section>
+
+</div>
+
+<nav class="tabbar">
+  <button class="tab active" data-screen="home"><span class="t-emoji">📚</span>课程</button>
+  <button class="tab" data-screen="songs"><span class="t-emoji">🎵</span>歌曲</button>
+  <button class="tab" data-screen="chat"><span class="t-emoji">💬</span>对话</button>
+  <button class="tab" data-screen="profile"><span class="t-emoji">⭐</span>我的</button>
+</nav>
+
+<script src="app.js" defer></script>
+</body>
+</html>

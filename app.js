@@ -280,7 +280,7 @@ function defaultState(){
     streak: { days: 0, lastDate: "" },
     lessons: {},
     stickers: [],
-    settings: { rate: "slow", voiceURI: "", voiceURIzh: "" }
+    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "kid" }
   };
 }
 
@@ -392,7 +392,9 @@ function makeUtterance(text, lang){
   const v = pickVoice(lang);
   if (v) u.voice = v;
   u.rate = lang === "en" ? (state.settings.rate === "slow" ? 0.72 : 0.95) : 1;
-  u.pitch = 1;
+  // 童声模式：浏览器本地 TTS 没有真正的儿童发音人，用提高音调来接近小朋友的声音
+  const kid = (state.settings.voiceStyle || "kid") === "kid";
+  u.pitch = kid ? (lang === "zh" ? 1.5 : 1.6) : 1;
   return u;
 }
 
@@ -525,6 +527,48 @@ function renderLesson(){
 
 let practiceIndex = 0;
 
+// ===== 课程全篇朗读：逐句连读 + 当前句高亮 =====
+let lessonReading = false;
+
+function readAllLesson(){
+  if (lessonReading){ stopLessonReading(); return; }
+  if (!currentLesson) return;
+  lessonReading = true;
+  $("btnReadAll").textContent = "⏹ 停止朗读";
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  const phrases = currentLesson.phrases;
+  let i = 0;
+  const cards = () => $("cardList").querySelectorAll(".pcard");
+  function markHeard(idx){
+    const card = cards()[idx];
+    if (card && !card.classList.contains("heard")){
+      card.classList.add("heard");
+      heardCount++;
+      const total = phrases.length;
+      $("learnFill").style.width = (heardCount / total * 100) + "%";
+      $("learnProg").textContent = "已听 " + heardCount + " / " + total + " 句";
+    }
+  }
+  function next(){
+    if (!lessonReading) return;
+    if (i >= phrases.length){ stopLessonReading(); return; }
+    cards().forEach((c, idx) => c.classList.toggle("reading", idx === i));
+    const u = makeUtterance(phrases[i].en, "en");
+    u.onend = () => { markHeard(i); i++; next(); };
+    u.onerror = () => { i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+function stopLessonReading(){
+  lessonReading = false;
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  $("btnReadAll").textContent = "🔊 全篇朗读";
+  const cards = $("cardList").querySelectorAll(".pcard");
+  cards.forEach((c) => c.classList.remove("reading"));
+}
+
 function startPractice(){
   practiceIndex = 0;
   renderPractice();
@@ -649,13 +693,44 @@ function renderSongs(){
     '<div class="song-card" data-id="' + s.id + '">' +
     '<div class="song-emoji">' + s.emoji + "</div>" +
     '<div class="song-meta"><div class="song-name">' + esc(s.title) + '</div><div class="song-sub">' + esc(s.sub) + "</div></div>" +
+    '<button class="song-play" data-id="' + s.id + '" aria-label="一键播放">▶</button>' +
     '<div class="song-arrow">›</div></div>'
   ).join("");
   $("songList").querySelectorAll(".song-card").forEach((c) => c.addEventListener("click", () => openSong(+c.dataset.id)));
+  $("songList").querySelectorAll(".song-play").forEach((b) => b.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const id = +b.dataset.id;
+    openSong(id);
+    setTimeout(() => playAllSong(), 350);
+  }));
 }
 
 let currentSong = null;
 let melodyPlaying = false;
+let songPlaying = false;
+
+// ===== 一键播放：有旋律就「旋律伴奏 + 朗读歌词」一起播，没有旋律就直接朗读 =====
+function playAllSong(){
+  if (!currentSong) return;
+  if (songPlaying){ stopSongPlay(); return; }
+  songPlaying = true;
+  $("btnPlayAll").textContent = "⏹ 停止";
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  if (currentSong.melody && !melodyPlaying) playMelody();
+  const u = makeUtterance(currentSong.lyrics.map((l) => l.en).join(" "), "en");
+  const done = () => stopSongPlay();
+  u.onend = done;
+  u.onerror = done;
+  window.speechSynthesis.speak(u);
+}
+
+function stopSongPlay(){
+  songPlaying = false;
+  $("btnPlayAll").textContent = "▶ 一键播放";
+  $("btnPlayMelody").textContent = "🎵 播放旋律";
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  if (melodyPlaying) stopMelody();
+}
 
 function openSong(id){
   currentSong = SONGS.find((s) => s.id === id);
@@ -666,8 +741,10 @@ function openSong(id){
   $("songLyrics").innerHTML = currentSong.lyrics.map((l) => '<div class="lyric">' + esc(l.en) + '<span class="lyric-zh">' + esc(l.zh) + "</span></div>").join("");
   const hasMelody = !!currentSong.melody;
   $("btnPlayMelody").style.display = hasMelody ? "" : "none";
-  $("btnPlayMelody").textContent = "▶ 播放旋律";
+  $("btnPlayMelody").textContent = "🎵 播放旋律";
   melodyPlaying = false;
+  $("btnPlayAll").textContent = "▶ 一键播放";
+  songPlaying = false;
   $("songNote").textContent = hasMelody
     ? "经典童谣曲调与歌词为公版，可在家庭学习中使用。"
     : "这首只有歌词朗读（经典曲调多为公版，欢迎跟读）。";
@@ -679,7 +756,7 @@ let audioCtx = null;
 function playMelody(){
   if (melodyPlaying){
     stopMelody();
-    $("btnPlayMelody").textContent = "▶ 播放旋律";
+    $("btnPlayMelody").textContent = "🎵 播放旋律";
     return;
   }
   if (!("AudioContext" in window || "webkitAudioContext" in window)) return;
@@ -711,7 +788,7 @@ function playMelody(){
   const totalMs = (t - audioCtx.currentTime) * 1000;
   setTimeout(() => {
     melodyPlaying = false;
-    $("btnPlayMelody").textContent = "▶ 播放旋律";
+    $("btnPlayMelody").textContent = "🎵 播放旋律";
   }, totalMs + 200);
 }
 
@@ -745,20 +822,33 @@ function _beep(freq, start, dur, type, vol){
   osc.connect(g); g.connect(ctx.destination);
   osc.start(t0); osc.stop(t0 + dur + 0.02);
 }
-function playChime(){
+function playChickSound(){
   const ctx = getCtx(); if (!ctx) return;
   if (ctx.state === "suspended") ctx.resume();
-  // C5 - E5 - G5 - C6 欢快小旋律
-  _beep(523.25, 0.00, 0.18, "triangle", 0.22);
-  _beep(659.25, 0.12, 0.18, "triangle", 0.22);
-  _beep(783.99, 0.24, 0.18, "triangle", 0.22);
-  _beep(1046.5, 0.36, 0.32, "triangle", 0.24);
+  // "叽—— 叽——" 两声上扬的小鸡叫（频率扫升合成）+ 尾音小铃
+  _chirp(0.00);
+  _chirp(0.18);
+  _beep(1046.5, 0.38, 0.30, "triangle", 0.16);
+}
+function _chirp(start){
+  const ctx = getCtx(); if (!ctx) return;
+  const t0 = ctx.currentTime + start;
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(1800, t0);
+  osc.frequency.exponentialRampToValueAtTime(3400, t0 + 0.10);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.13);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0 + 0.15);
 }
 function initSplash(){
   const splash = document.getElementById("splash");
   if (!splash) return;
   let played = false;
-  const playOnce = () => { if (played) return; played = true; try { playChime(); } catch (e) {} };
+  const playOnce = () => { if (played) return; played = true; try { playChickSound(); } catch (e) {} };
   const unlock = () => {
     playOnce();
     document.removeEventListener("pointerdown", unlock);
@@ -947,6 +1037,9 @@ function renderProfile(){
   }).join("");
   $("rateSlow").classList.toggle("active", state.settings.rate === "slow");
   $("rateNormal").classList.toggle("active", state.settings.rate === "normal");
+  const kid = (state.settings.voiceStyle || "kid") === "kid";
+  $("styleKid").classList.toggle("active", kid);
+  $("styleStd").classList.toggle("active", !kid);
   $("about").textContent = "语芽 · 亲子英语启蒙\n" + LESSONS.length + " 个场景 · " + LESSONS.reduce((n, l) => n + l.phrases.length, 0) + " 个亲子句子 · " + SONGS.length + " 首经典童谣\n数据只保存在本机浏览器，不会上传";
   refreshVoices();
   updateInstallButton();
@@ -976,8 +1069,9 @@ function wireEvents(){
   $("btnQuickCoach").addEventListener("click", () => { coachReturn = "home"; pickCoachPhrase(); openPage("coach"); });
   $("btnQuickSongs").addEventListener("click", () => showScreen("songs"));
 
-  $("btnBackLesson").addEventListener("click", () => closePage("lesson"));
-  $("btnStartPractice").addEventListener("click", startPractice);
+  $("btnBackLesson").addEventListener("click", () => { stopLessonReading(); closePage("lesson"); });
+  $("btnReadAll").addEventListener("click", readAllLesson);
+  $("btnStartPractice").addEventListener("click", () => { stopLessonReading(); startPractice(); });
   $("btnGoQuiz2").addEventListener("click", startQuiz);
 
   $("btnBackPractice").addEventListener("click", () => { $("practiceDone").classList.remove("show"); closePage("practice"); });
@@ -992,7 +1086,8 @@ function wireEvents(){
   $("btnQuizAgain").addEventListener("click", () => { $("quizDone").classList.remove("show"); startQuiz(); });
   $("btnQuizHome").addEventListener("click", () => { $("quizDone").classList.remove("show"); closePage("quiz"); closePage("lesson"); showScreen("home"); });
 
-  $("btnBackSong").addEventListener("click", () => { stopMelody(); closePage("song"); });
+  $("btnBackSong").addEventListener("click", () => { stopSongPlay(); closePage("song"); });
+  $("btnPlayAll").addEventListener("click", playAllSong);
   $("btnPlayMelody").addEventListener("click", playMelody);
   $("btnReadSong").addEventListener("click", readSongLyrics);
 
@@ -1010,6 +1105,8 @@ function wireEvents(){
 
   $("rateSlow").addEventListener("click", () => { state.settings.rate = "slow"; saveState(); renderProfile(); });
   $("rateNormal").addEventListener("click", () => { state.settings.rate = "normal"; saveState(); renderProfile(); });
+  $("styleKid").addEventListener("click", () => { state.settings.voiceStyle = "kid"; saveState(); renderProfile(); });
+  $("styleStd").addEventListener("click", () => { state.settings.voiceStyle = "std"; saveState(); renderProfile(); });
   $("voiceSelect").addEventListener("change", (e) => { state.settings.voiceURI = e.target.value; saveState(); });
   $("voiceSelectZh").addEventListener("change", (e) => { state.settings.voiceURIzh = e.target.value; saveState(); });
   $("btnInstall").addEventListener("click", async () => {

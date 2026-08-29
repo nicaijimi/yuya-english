@@ -121,7 +121,9 @@ const LESSONS = [
   ]}
 ];
 
-const NOTE_FREQ = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25 };
+// A#4 = 降B，If You're Happy and You Know It 原曲含此音
+const NOTE_FREQ = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25,
+                    "A#4": 466.16, F5: 698.46, G5: 783.99, A5: 880.00 };
 
 const MELODIES = {
   twinkle: [
@@ -143,6 +145,52 @@ const MELODIES = {
     ["D4", 1], ["E4", 1], ["F4", 2], ["E4", 1], ["F4", 1], ["G4", 2],
     ["G4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
     ["D4", 1], ["G4", 1], ["E4", 1], ["C4", 2]
+  ],
+  // 以下 6 首旋律按公开流传的传统童谣记谱录入（公有领域），音符经多来源交叉核对
+  wheels: [
+    ["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2],
+    ["D5", 1], ["B4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C5", 2],
+    ["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2],
+    ["D5", 1], ["G4", 1], ["C5", 2]
+  ],
+  macdonald: [
+    ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
+    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2],
+    ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
+    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2],
+    ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2],
+    ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2],
+    ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5],
+    ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5],
+    ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
+    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2]
+  ],
+  headshoulders: [
+    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 1], ["C4", 1], ["C4", 1], ["C4", 2],
+    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["G4", 1], ["C4", 1], ["C4", 1], ["C4", 2],
+    ["A4", 1], ["G4", 1], ["F4", 1], ["A4", 1], ["C5", 1], ["F4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["D4", 2],
+    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 1], ["C4", 1], ["C4", 1], ["C4", 2]
+  ],
+  happy: [
+    ["C4", 1], ["C4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
+    ["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["G4", 1], ["A4", 2],
+    ["A4", 1], ["A4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["D5", 1], ["D5", 2],
+    ["A#4", 1], ["A#4", 1], ["A4", 1], ["A4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["F4", 2],
+    ["A4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["F4", 2]
+  ],
+  ducks: [
+    ["E4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C4", 2],
+    ["E4", 1], ["D4", 1], ["D4", 1], ["G4", 2],
+    ["E4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
+    ["E4", 1], ["D4", 1], ["D4", 1], ["D4", 1],
+    ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1],
+    ["E4", 1], ["D4", 1], ["C4", 2]
+  ],
+  rain: [
+    ["G4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
+    ["G4", 1], ["G4", 1], ["E4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
+    ["F4", 1], ["F4", 1], ["D4", 1], ["D4", 1], ["F4", 1], ["F4", 1], ["D4", 2],
+    ["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["C4", 1], ["C4", 2]
   ]
 };
 
@@ -163,13 +211,13 @@ const SONGS = [
     { en: "Now I know my ABCs,", zh: "现在我认识字母表啦" },
     { en: "Next time won't you sing with me?", zh: "下次和我一起唱好吗？" }
   ]},
-  { id: 3, title: "The Wheels on the Bus", emoji: "🚌", sub: "公交车的轮子", melody: null, lyrics: [
+  { id: 3, title: "The Wheels on the Bus", emoji: "🚌", sub: "公交车的轮子", melody: "wheels", lyrics: [
     { en: "The wheels on the bus go round and round,", zh: "公交车的轮子转呀转" },
     { en: "Round and round, round and round.", zh: "转呀转，转呀转" },
     { en: "The wheels on the bus go round and round,", zh: "公交车的轮子转呀转" },
     { en: "All through the town.", zh: "转遍了整座城" }
   ]},
-  { id: 4, title: "Old MacDonald Had a Farm", emoji: "🐮", sub: "老麦克唐纳有个农场", melody: null, lyrics: [
+  { id: 4, title: "Old MacDonald Had a Farm", emoji: "🐮", sub: "老麦克唐纳有个农场", melody: "macdonald", lyrics: [
     { en: "Old MacDonald had a farm,", zh: "老麦克唐纳有个农场" },
     { en: "E-I-E-I-O.", zh: "咿呀咿呀哟" },
     { en: "And on that farm he had a cow,", zh: "农场里有头奶牛" },
@@ -197,7 +245,7 @@ const SONGS = [
     { en: "Mary had a little lamb,", zh: "玛丽有只小羊羔" },
     { en: "Its fleece was white as snow.", zh: "它的羊毛像雪一样白" }
   ]},
-  { id: 8, title: "Head Shoulders Knees and Toes", emoji: "🙆", sub: "身体歌", melody: null, lyrics: [
+  { id: 8, title: "Head Shoulders Knees and Toes", emoji: "🙆", sub: "身体歌", melody: "headshoulders", lyrics: [
     { en: "Head, shoulders, knees and toes,", zh: "头、肩膀、膝盖和脚趾" },
     { en: "Knees and toes.", zh: "膝盖和脚趾" },
     { en: "Head, shoulders, knees and toes,", zh: "头、肩膀、膝盖和脚趾" },
@@ -205,19 +253,19 @@ const SONGS = [
     { en: "Eyes and ears and mouth and nose,", zh: "眼睛、耳朵、嘴巴和鼻子" },
     { en: "Head, shoulders, knees and toes.", zh: "头、肩膀、膝盖和脚趾" }
   ]},
-  { id: 9, title: "If You're Happy and You Know It", emoji: "👏", sub: "幸福拍手歌", melody: null, lyrics: [
+  { id: 9, title: "If You're Happy and You Know It", emoji: "👏", sub: "幸福拍手歌", melody: "happy", lyrics: [
     { en: "If you're happy and you know it, clap your hands.", zh: "如果你开心而且你知道，就拍拍手" },
     { en: "If you're happy and you know it, clap your hands.", zh: "如果你开心而且你知道，就拍拍手" },
     { en: "If you're happy and you know it, then your face will surely show it.", zh: "如果你开心而且你知道，脸上也会笑出来" },
     { en: "If you're happy and you know it, clap your hands.", zh: "如果你开心而且你知道，就拍拍手" }
   ]},
-  { id: 10, title: "Five Little Ducks", emoji: "🦆", sub: "五只小鸭子", melody: null, lyrics: [
+  { id: 10, title: "Five Little Ducks", emoji: "🦆", sub: "五只小鸭子", melody: "ducks", lyrics: [
     { en: "Five little ducks went out one day,", zh: "五只小鸭子有一天出去玩" },
     { en: "Over the hill and far away.", zh: "翻过小山，走到很远很远" },
     { en: "Mother duck said, quack quack quack.", zh: "鸭妈妈叫，嘎嘎嘎" },
     { en: "But only four little ducks came back.", zh: "可只有四只小鸭子回来了" }
   ]},
-  { id: 11, title: "Rain Rain Go Away", emoji: "🌧️", sub: "雨呀雨快走开", melody: null, lyrics: [
+  { id: 11, title: "Rain Rain Go Away", emoji: "🌧️", sub: "雨呀雨快走开", melody: "rain", lyrics: [
     { en: "Rain, rain, go away,", zh: "雨呀雨，快走开" },
     { en: "Come again another day.", zh: "改天你再来" },
     { en: "Little baby wants to play.", zh: "小宝宝想要出去玩" },
@@ -719,17 +767,27 @@ let melodyPlaying = false;
 let songPlaying = false;
 
 // ===== 一键播放：有旋律就「旋律伴奏 + 朗读歌词」一起播，没有旋律就直接朗读 =====
+// 一键播放 = 旋律循环当伴奏（音量压低不抢人声）+ 歌词逐句朗读并高亮
 function playAllSong(){
   if (!currentSong) return;
   if (songPlaying){ stopSongPlay(); return; }
   songPlaying = true;
   $("btnPlayAll").textContent = "⏹ 停止";
   try { window.speechSynthesis.cancel(); } catch (e) {}
-  if (currentSong.melody && !melodyPlaying) playMelody();
-  const u = makeUtterance(currentSong.lyrics.map((l) => l.en).join(" "), "en");
-  const done = () => stopSongPlay();
-  u.onend = done;
-  u.onerror = done;
+  if (currentSong.melody) startMelody(true, MELODY_VOL_BED);
+  speakLyricLine(0);
+}
+
+function speakLyricLine(i){
+  if (!songPlaying) return;
+  const lines = currentSong.lyrics;
+  if (i >= lines.length){ stopSongPlay(); return; }
+  const els = $("songLyrics").querySelectorAll(".lyric");
+  els.forEach((el, idx) => el.classList.toggle("speaking", idx === i));
+  const u = makeUtterance(lines[i].en, "en");
+  const advance = () => setTimeout(() => speakLyricLine(i + 1), 420);
+  u.onend = advance;
+  u.onerror = advance;
   window.speechSynthesis.speak(u);
 }
 
@@ -739,6 +797,8 @@ function stopSongPlay(){
   $("btnPlayMelody").textContent = "🎵 播放旋律";
   try { window.speechSynthesis.cancel(); } catch (e) {}
   if (melodyPlaying) stopMelody();
+  const els = $("songLyrics").querySelectorAll(".lyric");
+  els.forEach((el) => el.classList.remove("speaking"));
 }
 
 function openSong(id){
@@ -751,30 +811,25 @@ function openSong(id){
   const hasMelody = !!currentSong.melody;
   $("btnPlayMelody").style.display = hasMelody ? "" : "none";
   $("btnPlayMelody").textContent = "🎵 播放旋律";
-  melodyPlaying = false;
+  stopMelody();   // 切歌时清掉上一首的循环排程，避免两首曲子叠着响
   $("btnPlayAll").textContent = "▶ 一键播放";
   songPlaying = false;
   $("songNote").textContent = hasMelody
-    ? "经典童谣曲调与歌词为公版，可在家庭学习中使用。"
-    : "这首只有歌词朗读（经典曲调多为公版，欢迎跟读）。";
+    ? "一键播放：配上这首的经典曲调，逐句朗读。想让孩子跟着哼，点「🎵 播放旋律」只听曲子。"
+    : "这首暂无曲调，一键播放为逐句朗读。";
   openPage("song");
 }
 
 let audioCtx = null;
+let melodyTimer = null;      // 循环排程 / 收尾定时器
+let melodyLooping = false;   // true=循环伴奏（跟朗读走），false=只播一遍
 
-function playMelody(){
-  if (melodyPlaying){
-    stopMelody();
-    $("btnPlayMelody").textContent = "🎵 播放旋律";
-    return;
-  }
-  if (!("AudioContext" in window || "webkitAudioContext" in window)) return;
-  stopMelody();
+// 排程一遍旋律，返回该遍结束的绝对时间
+function scheduleMelodyOnce(startAt, vol){
   const melody = MELODIES[currentSong.melody];
-  if (!melody) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!melody) return startAt;
   const beat = 60 / 92;
-  let t = audioCtx.currentTime + 0.08;
+  let t = startAt;
   for (const [note, beats] of melody){
     const dur = beats * beat;
     if (note !== "R" && NOTE_FREQ[note]){
@@ -783,7 +838,7 @@ function playMelody(){
       osc.type = "triangle";
       osc.frequency.value = NOTE_FREQ[note];
       gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(0.22, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(vol, t + 0.03);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + dur - 0.05);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -792,13 +847,60 @@ function playMelody(){
     }
     t += dur;
   }
+  return t;
+}
+
+// 循环伴奏：这一遍快结束时提前排下一遍，保证旋律不断，直到 stopMelody
+const MELODY_VOL_SOLO = 0.22;   // 单独听旋律
+const MELODY_VOL_BED  = 0.10;   // 当伴奏，压低不抢人声
+let MELODY_VOL = MELODY_VOL_SOLO;
+
+function melodyLoop(){
+  if (!melodyPlaying || !audioCtx) return;
+  const endAt = scheduleMelodyOnce(audioCtx.currentTime + 0.05, MELODY_VOL);
+  const msLeft = (endAt - audioCtx.currentTime) * 1000;
+  melodyTimer = setTimeout(melodyLoop, Math.max(msLeft - 180, 120));
+}
+
+// loop=true 循环伴奏，loop=false 只播一遍
+function startMelody(loop, vol){
+  stopMelody();
+  if (!currentSong || !currentSong.melody) return false;
+  if (!MELODIES[currentSong.melody]) return false;
+  if (!("AudioContext" in window || "webkitAudioContext" in window)) return false;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
   melodyPlaying = true;
-  $("btnPlayMelody").textContent = "⏹ 停止";
-  const totalMs = (t - audioCtx.currentTime) * 1000;
-  setTimeout(() => {
-    melodyPlaying = false;
+  melodyLooping = !!loop;
+  MELODY_VOL = vol;
+  if (loop){
+    melodyLoop();
+  } else {
+    const endAt = scheduleMelodyOnce(audioCtx.currentTime + 0.08, vol);
+    const totalMs = (endAt - audioCtx.currentTime) * 1000;
+    melodyTimer = setTimeout(() => {
+      stopMelody();
+      $("btnPlayMelody").textContent = "🎵 播放旋律";
+    }, totalMs + 200);
+  }
+  return true;
+}
+
+function stopMelody(){
+  if (melodyTimer){ clearTimeout(melodyTimer); melodyTimer = null; }
+  melodyLooping = false;
+  if (audioCtx){ try { audioCtx.close(); } catch (e) {} audioCtx = null; }
+  melodyPlaying = false;
+}
+
+// 「🎵 播放旋律」按钮：只听旋律，不朗读
+function playMelody(){
+  if (melodyPlaying){
+    stopMelody();
     $("btnPlayMelody").textContent = "🎵 播放旋律";
-  }, totalMs + 200);
+    return;
+  }
+  if (startMelody(false, MELODY_VOL_SOLO)) $("btnPlayMelody").textContent = "⏹ 停止";
 }
 
 function stopMelody(){

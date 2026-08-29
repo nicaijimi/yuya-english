@@ -127,70 +127,86 @@ const NOTE_FREQ = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, 
 
 const MELODIES = {
   twinkle: [
-    ["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2],
-    ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]]
   ],
-  row: [
-    ["C4", 1], ["C4", 1], ["C4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
-    ["G4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["E4", 1], ["E4", 1], ["C4", 1], ["C4", 1], ["C4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["C4", 2]
+  abc: [
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]]
   ],
-  mary: [
-    ["E4", 1], ["D4", 1], ["C4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["E4", 2],
-    ["D4", 1], ["D4", 1], ["D4", 2], ["E4", 1], ["G4", 1], ["G4", 2],
-    ["E4", 1], ["D4", 1], ["C4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["E4", 2],
-    ["E4", 1], ["D4", 1], ["D4", 1], ["E4", 1], ["D4", 1], ["C4", 2]
+  baabaa: [
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["G4", 1], ["G4", 1], ["F4", 1], ["F4", 2]],
+    [["E4", 1], ["E4", 1], ["D4", 2]],
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["A4", 1], ["A4", 1], ["G4", 2], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["D4", 1], ["C4", 2]]
   ],
-  london: [
-    ["G4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
-    ["D4", 1], ["E4", 1], ["F4", 2], ["E4", 1], ["F4", 1], ["G4", 2],
-    ["G4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
-    ["D4", 1], ["G4", 1], ["E4", 1], ["C4", 2]
-  ],
-  // 以下 6 首旋律按公开流传的传统童谣记谱录入（公有领域），音符经多来源交叉核对
   wheels: [
-    ["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2],
-    ["D5", 1], ["B4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C5", 2],
-    ["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2],
-    ["D5", 1], ["G4", 1], ["C5", 2]
+    [["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2]],
+    [["D5", 1], ["B4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C5", 2]],
+    [["G4", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 2]],
+    [["D5", 1], ["G4", 1], ["C5", 2]]
   ],
   macdonald: [
-    ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
-    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2],
-    ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
-    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2],
-    ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2],
-    ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2],
-    ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5],
-    ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5],
-    ["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2],
-    ["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2]
+    [["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["G4", 1], ["G4", 1], ["G4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["D4", 2]],
+    [["B4", 1], ["B4", 1], ["A4", 1], ["A4", 1], ["G4", 2]],
+    [["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2], ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 2]],
+    [["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5], ["G4", 0.5]]
+  ],
+  row: [
+    [["C4", 1], ["C4", 1], ["C4", 1], ["D4", 1], ["E4", 2]],
+    [["E4", 1], ["D4", 1], ["E4", 1], ["F4", 1], ["G4", 2]],
+    [["C5", 1], ["C5", 1], ["C5", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["E4", 1], ["E4", 1], ["C4", 1], ["C4", 1], ["C4", 2]],
+    [["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["C4", 2]]
+  ],
+  mary: [
+    [["E4", 1], ["D4", 1], ["C4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["E4", 2]],
+    [["D4", 1], ["D4", 1], ["D4", 2], ["E4", 1], ["G4", 1], ["G4", 2]],
+    [["E4", 1], ["D4", 1], ["C4", 1], ["D4", 1], ["E4", 1], ["E4", 1], ["E4", 2]],
+    [["E4", 1], ["D4", 1], ["D4", 1], ["E4", 1], ["D4", 1], ["C4", 2]]
   ],
   headshoulders: [
-    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 1], ["C4", 1], ["C4", 1], ["C4", 2],
-    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["G4", 1], ["C4", 1], ["C4", 1], ["C4", 2],
-    ["A4", 1], ["G4", 1], ["F4", 1], ["A4", 1], ["C5", 1], ["F4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["D4", 2],
-    ["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 1], ["C4", 1], ["C4", 1], ["C4", 2]
+    [["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 2]],
+    [["C4", 1], ["C4", 1], ["C4", 2]],
+    [["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["G4", 2]],
+    [["C4", 1], ["C4", 1], ["C4", 2]],
+    [["A4", 1], ["G4", 1], ["F4", 1], ["A4", 1], ["C5", 1], ["F4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["D4", 2]],
+    [["C4", 1], ["D4", 1], ["C4", 1], ["B4", 1], ["C4", 1], ["A4", 1], ["C4", 1], ["C4", 1], ["C4", 2]]
   ],
   happy: [
-    ["C4", 1], ["C4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2],
-    ["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["G4", 1], ["A4", 2],
-    ["A4", 1], ["A4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["D5", 1], ["D5", 2],
-    ["A#4", 1], ["A#4", 1], ["A4", 1], ["A4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["F4", 2],
-    ["A4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["F4", 2]
+    [["C4", 1], ["C4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2]],
+    [["C4", 1], ["C4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["G4", 1], ["A4", 2]],
+    [["A4", 1], ["A4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["A#4", 1], ["D5", 1], ["D5", 2], ["A#4", 1], ["A#4", 1], ["A4", 1], ["A4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["F4", 2]],
+    [["A4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["F4", 2]]
   ],
   ducks: [
-    ["E4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C4", 2],
-    ["E4", 1], ["D4", 1], ["D4", 1], ["G4", 2],
-    ["E4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
-    ["E4", 1], ["D4", 1], ["D4", 1], ["D4", 1],
-    ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1],
-    ["E4", 1], ["D4", 1], ["C4", 2]
+    [["E4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["E4", 1], ["C4", 2]],
+    [["E4", 1], ["D4", 1], ["D4", 1], ["G4", 2]],
+    [["E4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2]],
+    [["E4", 1], ["D4", 1], ["D4", 1], ["D4", 1], ["G4", 1], ["G4", 1], ["G4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["C4", 2]]
   ],
   rain: [
-    ["G4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
-    ["G4", 1], ["G4", 1], ["E4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["E4", 2],
-    ["F4", 1], ["F4", 1], ["D4", 1], ["D4", 1], ["F4", 1], ["F4", 1], ["D4", 2],
-    ["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["C4", 1], ["C4", 2]
+    [["G4", 1], ["E4", 1], ["G4", 1], ["G4", 1], ["E4", 2]],
+    [["G4", 1], ["G4", 1], ["E4", 1], ["A4", 1], ["G4", 1], ["G4", 1], ["E4", 2]],
+    [["F4", 1], ["F4", 1], ["D4", 1], ["D4", 1], ["F4", 1], ["F4", 1], ["D4", 2]],
+    [["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1], ["E4", 1], ["C4", 1], ["C4", 2]]
+  ],
+  london: [
+    [["G4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2]],
+    [["D4", 1], ["E4", 1], ["F4", 2], ["E4", 1], ["F4", 1], ["G4", 2]],
+    [["G4", 1], ["A4", 1], ["G4", 1], ["F4", 1], ["E4", 1], ["F4", 1], ["G4", 2]],
+    [["D4", 1], ["G4", 1], ["E4", 1], ["C4", 2]]
   ]
 };
 
@@ -203,7 +219,7 @@ const SONGS = [
     { en: "Twinkle, twinkle, little star,", zh: "一闪一闪小星星" },
     { en: "How I wonder what you are.", zh: "我真好奇你是什么" }
   ]},
-  { id: 2, title: "ABC Song", emoji: "🔤", sub: "字母歌", melody: "twinkle", lyrics: [
+  { id: 2, title: "ABC Song", emoji: "🔤", sub: "字母歌", melody: "abc", lyrics: [
     { en: "A B C D E F G", zh: "A B C D E F G" },
     { en: "H I J K L M N O P", zh: "H I J K L M N O P" },
     { en: "Q R S, T U V", zh: "Q R S、T U V" },
@@ -225,7 +241,7 @@ const SONGS = [
     { en: "With a moo moo here and a moo moo there,", zh: "这儿哞哞，那儿哞哞" },
     { en: "Here a moo, there a moo, everywhere a moo moo.", zh: "到处都是哞哞叫" }
   ]},
-  { id: 5, title: "Baa Baa Black Sheep", emoji: "🐑", sub: "小黑羊", melody: "twinkle", lyrics: [
+  { id: 5, title: "Baa Baa Black Sheep", emoji: "🐑", sub: "小黑羊", melody: "baabaa", lyrics: [
     { en: "Baa, baa, black sheep,", zh: "咩咩，小黑羊" },
     { en: "Have you any wool?", zh: "你有没有羊毛呀？" },
     { en: "Yes sir, yes sir, three bags full.", zh: "有的先生，满满三大袋" },
@@ -767,23 +783,177 @@ let melodyPlaying = false;
 let songPlaying = false;
 
 // ===== 一键播放：有旋律就「旋律伴奏 + 朗读歌词」一起播，没有旋律就直接朗读 =====
-// 一键播放 = 旋律循环当伴奏（音量压低不抢人声）+ 歌词逐句朗读并高亮
+// ===== 儿歌：完整一首歌（童声演唱 + 贝斯 + 节拍）=====
+// 童声元音「啊」的三段共振峰，比成人高约 15%，听着像小孩
+const FORMANT_A = [880, 1280, 3100];
+
+let audioCtx = null;
+let songTimers = [];   // 歌词高亮 / 收尾定时器
+let songMode = "";     // "song"=完整歌  "melody"=只听曲子  "read"=逐句学词
+
+// 一键播放 = 一首完整的歌
 function playAllSong(){
   if (!currentSong) return;
-  if (songPlaying){ stopSongPlay(); return; }
+  if (songPlaying && songMode === "song"){ stopSongPlay(); return; }
+  stopSongPlay();
+  if (!currentSong.melody){ startReadLyrics(); return; }
+  if (playSong(true)){
+    songMode = "song";
+    songPlaying = true;
+    $("btnPlayAll").textContent = "⏹ 停止";
+  }
+}
+
+// 「只听曲子」= 纯乐器版，没有童声
+function playMelody(){
+  if (songPlaying && songMode === "melody"){ stopSongPlay(); return; }
+  stopSongPlay();
+  if (!currentSong || !currentSong.melody) return;
+  if (playSong(false)){
+    songMode = "melody";
+    songPlaying = true;
+    $("btnPlayMelody").textContent = "⏹ 停止";
+  }
+}
+
+// 排完整一首歌：主旋律（童声或乐器）+ 贝斯 + 节拍，并安排歌词逐句高亮
+function playSong(withVoice){
+  stopMelody();
+  const phrases = MELODIES[currentSong.melody];
+  if (!phrases || !phrases.length) return false;
+  if (!("AudioContext" in window || "webkitAudioContext" in window)) return false;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  melodyPlaying = true;
+
+  const beat = 60 / 92;
+  const base = audioCtx.currentTime;
+  const start = base + 0.18;
+  let t = start;
+
+  const totalBeats = phrases.reduce((a, ph) => a + ph.reduce((x, n) => x + n[1], 0), 0);
+  for (let b = 0; b < totalBeats; b++) playClick(start + b * beat, 0.04);
+
+  phrases.forEach((phrase, pi) => {
+    const phraseDur = phrase.reduce((a, n) => a + n[1], 0) * beat;
+    const root = NOTE_FREQ[phrase[0][0]];
+    if (root) playBass(root / 2, t, phraseDur * 0.95, 0.07);
+    songTimers.push(setTimeout(() => highlightLyric(pi), Math.max((t - base) * 1000, 0)));
+    phrase.forEach(([note, beats]) => {
+      const dur = beats * beat;
+      const f = NOTE_FREQ[note];
+      if (f){
+        if (withVoice) singNote(f, t, dur * 0.9, 0.17);
+        else toneNote(f, t, dur * 0.9, 0.20);
+      }
+      t += dur;
+    });
+  });
+
+  songTimers.push(setTimeout(() => stopSongPlay(), (t - base) * 1000 + 600));
+  return true;
+}
+
+function highlightLyric(i){
+  const els = $("songLyrics").querySelectorAll(".lyric");
+  els.forEach((el, idx) => el.classList.toggle("speaking", idx === i));
+}
+
+// 童声：锯齿波声源 → 三段共振峰滤波 → 颤音 + 包络
+function singNote(freq, t0, dur, vol){
+  if (!audioCtx || dur < 0.06) return;
+  const osc = audioCtx.createOscillator();
+  osc.type = "sawtooth";
+  osc.frequency.value = freq;
+
+  const vib = audioCtx.createOscillator();
+  vib.frequency.value = 5.4;
+  const vibAmt = audioCtx.createGain();
+  vibAmt.gain.value = freq * 0.011;
+  vib.connect(vibAmt); vibAmt.connect(osc.frequency);
+
+  const mix = audioCtx.createGain();
+  FORMANT_A.forEach((f, i) => {
+    const bp = audioCtx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = f;
+    bp.Q.value = 7 + i * 4;
+    const g = audioCtx.createGain();
+    g.gain.value = [1, 0.45, 0.18][i];
+    osc.connect(bp); bp.connect(g); g.connect(mix);
+  });
+
+  const env = audioCtx.createGain();
+  env.gain.setValueAtTime(0.0001, t0);
+  env.gain.exponentialRampToValueAtTime(vol, t0 + 0.055);
+  env.gain.setValueAtTime(vol, t0 + dur * 0.7);
+  env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  mix.connect(env); env.connect(audioCtx.destination);
+
+  osc.start(t0); osc.stop(t0 + dur);
+  vib.start(t0); vib.stop(t0 + dur);
+}
+
+// 纯乐器音色
+function toneNote(freq, t0, dur, vol){
+  if (!audioCtx || dur < 0.06) return;
+  const osc = audioCtx.createOscillator();
+  osc.type = "triangle";
+  osc.frequency.value = freq;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.03);
+  g.gain.setValueAtTime(vol, t0 + dur * 0.7);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0 + dur);
+}
+
+// 贝斯：乐句首音降八度，柔和垫底
+function playBass(freq, t0, dur, vol){
+  if (!audioCtx || dur < 0.1) return;
+  const osc = audioCtx.createOscillator();
+  osc.type = "triangle";
+  osc.frequency.value = freq;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.09);
+  g.gain.setValueAtTime(vol, t0 + dur * 0.75);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0 + dur);
+}
+
+// 节拍：短促柔和的木质感
+function playClick(t0, vol){
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(190, t0);
+  osc.frequency.exponentialRampToValueAtTime(85, t0 + 0.05);
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.09);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0 + 0.1);
+}
+
+// 逐句学词：用语音念歌词，让孩子听懂意思
+function startReadLyrics(){
+  if (songPlaying && songMode === "read"){ stopSongPlay(); return; }
+  stopSongPlay();
+  songMode = "read";
   songPlaying = true;
-  $("btnPlayAll").textContent = "⏹ 停止";
-  try { window.speechSynthesis.cancel(); } catch (e) {}
-  if (currentSong.melody) startMelody(true, MELODY_VOL_BED);
+  $("btnReadSong").textContent = "⏹ 停止";
   speakLyricLine(0);
 }
 
 function speakLyricLine(i){
-  if (!songPlaying) return;
+  if (!songPlaying || songMode !== "read" || !currentSong) return;
   const lines = currentSong.lyrics;
   if (i >= lines.length){ stopSongPlay(); return; }
-  const els = $("songLyrics").querySelectorAll(".lyric");
-  els.forEach((el, idx) => el.classList.toggle("speaking", idx === i));
+  highlightLyric(i);
   const u = makeUtterance(lines[i].en, "en");
   const advance = () => setTimeout(() => speakLyricLine(i + 1), 420);
   u.onend = advance;
@@ -793,122 +963,36 @@ function speakLyricLine(i){
 
 function stopSongPlay(){
   songPlaying = false;
-  $("btnPlayAll").textContent = "▶ 一键播放";
-  $("btnPlayMelody").textContent = "🎵 播放旋律";
+  stopMelody();
   try { window.speechSynthesis.cancel(); } catch (e) {}
-  if (melodyPlaying) stopMelody();
-  const els = $("songLyrics").querySelectorAll(".lyric");
-  els.forEach((el) => el.classList.remove("speaking"));
+  $("btnPlayAll").textContent = "▶ 完整播放";
+  $("btnPlayMelody").textContent = "🎵 只听曲子";
+  $("btnReadSong").textContent = "🔊 逐句学词";
+  $("songLyrics").querySelectorAll(".lyric").forEach((el) => el.classList.remove("speaking"));
+  songMode = "";
+}
+
+function stopMelody(){
+  songTimers.forEach(clearTimeout);
+  songTimers = [];
+  if (audioCtx){ try { audioCtx.close(); } catch (e) {} audioCtx = null; }
+  melodyPlaying = false;
 }
 
 function openSong(id){
   currentSong = SONGS.find((s) => s.id === id);
   if (!currentSong) return;
+  stopSongPlay();
   $("songEmoji").textContent = currentSong.emoji;
   $("songTitle").textContent = currentSong.title;
   $("songSub").textContent = currentSong.sub;
   $("songLyrics").innerHTML = currentSong.lyrics.map((l) => '<div class="lyric">' + esc(l.en) + '<span class="lyric-zh">' + esc(l.zh) + "</span></div>").join("");
   const hasMelody = !!currentSong.melody;
   $("btnPlayMelody").style.display = hasMelody ? "" : "none";
-  $("btnPlayMelody").textContent = "🎵 播放旋律";
-  stopMelody();   // 切歌时清掉上一首的循环排程，避免两首曲子叠着响
-  $("btnPlayAll").textContent = "▶ 一键播放";
-  songPlaying = false;
   $("songNote").textContent = hasMelody
-    ? "一键播放：配上这首的经典曲调，逐句朗读。想让孩子跟着哼，点「🎵 播放旋律」只听曲子。"
-    : "这首暂无曲调，一键播放为逐句朗读。";
+    ? "完整播放：童声把这首唱一遍，配贝斯和节拍，歌词会跟着亮。想先学意思，点「逐句学词」。"
+    : "这首暂无曲调，用「逐句学词」听发音。";
   openPage("song");
-}
-
-let audioCtx = null;
-let melodyTimer = null;      // 循环排程 / 收尾定时器
-let melodyLooping = false;   // true=循环伴奏（跟朗读走），false=只播一遍
-
-// 排程一遍旋律，返回该遍结束的绝对时间
-function scheduleMelodyOnce(startAt, vol){
-  const melody = MELODIES[currentSong.melody];
-  if (!melody) return startAt;
-  const beat = 60 / 92;
-  let t = startAt;
-  for (const [note, beats] of melody){
-    const dur = beats * beat;
-    if (note !== "R" && NOTE_FREQ[note]){
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "triangle";
-      osc.frequency.value = NOTE_FREQ[note];
-      gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(vol, t + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur - 0.05);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(t);
-      osc.stop(t + dur);
-    }
-    t += dur;
-  }
-  return t;
-}
-
-// 循环伴奏：这一遍快结束时提前排下一遍，保证旋律不断，直到 stopMelody
-const MELODY_VOL_SOLO = 0.22;   // 单独听旋律
-const MELODY_VOL_BED  = 0.10;   // 当伴奏，压低不抢人声
-let MELODY_VOL = MELODY_VOL_SOLO;
-
-function melodyLoop(){
-  if (!melodyPlaying || !audioCtx) return;
-  const endAt = scheduleMelodyOnce(audioCtx.currentTime + 0.05, MELODY_VOL);
-  const msLeft = (endAt - audioCtx.currentTime) * 1000;
-  melodyTimer = setTimeout(melodyLoop, Math.max(msLeft - 180, 120));
-}
-
-// loop=true 循环伴奏，loop=false 只播一遍
-function startMelody(loop, vol){
-  stopMelody();
-  if (!currentSong || !currentSong.melody) return false;
-  if (!MELODIES[currentSong.melody]) return false;
-  if (!("AudioContext" in window || "webkitAudioContext" in window)) return false;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-  melodyPlaying = true;
-  melodyLooping = !!loop;
-  MELODY_VOL = vol;
-  if (loop){
-    melodyLoop();
-  } else {
-    const endAt = scheduleMelodyOnce(audioCtx.currentTime + 0.08, vol);
-    const totalMs = (endAt - audioCtx.currentTime) * 1000;
-    melodyTimer = setTimeout(() => {
-      stopMelody();
-      $("btnPlayMelody").textContent = "🎵 播放旋律";
-    }, totalMs + 200);
-  }
-  return true;
-}
-
-function stopMelody(){
-  if (melodyTimer){ clearTimeout(melodyTimer); melodyTimer = null; }
-  melodyLooping = false;
-  if (audioCtx){ try { audioCtx.close(); } catch (e) {} audioCtx = null; }
-  melodyPlaying = false;
-}
-
-// 「🎵 播放旋律」按钮：只听旋律，不朗读
-function playMelody(){
-  if (melodyPlaying){
-    stopMelody();
-    $("btnPlayMelody").textContent = "🎵 播放旋律";
-    return;
-  }
-  if (startMelody(false, MELODY_VOL_SOLO)) $("btnPlayMelody").textContent = "⏹ 停止";
-}
-
-function stopMelody(){
-  if (audioCtx){
-    try { audioCtx.close(); } catch (e) {}
-    audioCtx = null;
-  }
-  melodyPlaying = false;
 }
 
 // ===== 欢迎提示音（Web Audio 合成，无需任何音频文件）=====
@@ -1200,7 +1284,7 @@ function wireEvents(){
   $("btnBackSong").addEventListener("click", () => { stopSongPlay(); closePage("song"); });
   $("btnPlayAll").addEventListener("click", playAllSong);
   $("btnPlayMelody").addEventListener("click", playMelody);
-  $("btnReadSong").addEventListener("click", readSongLyrics);
+  $("btnReadSong").addEventListener("click", startReadLyrics);
 
   $("langEn").addEventListener("click", () => setChatLang("en"));
   $("langZh").addEventListener("click", () => setChatLang("zh"));

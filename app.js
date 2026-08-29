@@ -344,7 +344,7 @@ function defaultState(){
     streak: { days: 0, lastDate: "" },
     lessons: {},
     stickers: [],
-    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "cartoon", cartoonPreset: "tender" }
+    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "cartoon", cartoonPreset: "soft" }
   };
 }
 
@@ -355,7 +355,7 @@ let state = loadState();
   try {
     const s = state.settings;
     if (s && s.cartoonPreset === undefined){
-      s.cartoonPreset = "tender";
+      s.cartoonPreset = "soft";
       if (s.voiceStyle === "kid" || s.voiceStyle === undefined) s.voiceStyle = "cartoon";
     }
   } catch (e) {}
@@ -495,6 +495,24 @@ function speakCartoon(text, lang){
     t += dur + 0.028;
   });
   return true;
+}
+
+// 念一句并推进：卡通模式用共振峰合成（按音节估算时长），否则用 TTS 的 onend
+function speakLineAndAdvance(text, lang, done){
+  const isCartoon = (state.settings.voiceStyle || "kid") === "cartoon" && lang !== "zh";
+  if (isCartoon && speakCartoon(text, lang)){
+    const preset = CARTOON_PRESETS[state.settings.cartoonPreset] || CARTOON_PRESETS.soft;
+    const n = Math.max(syllablesOfLine(text).length, 1);
+    const dur = n * (preset.syl + 0.028) + 0.5;   // 合成时长 + 句间停顿
+    return setTimeout(done, dur * 1000);
+  }
+  if (!("speechSynthesis" in window)){ return setTimeout(done, 800); }
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  const u = makeUtterance(text, lang);
+  u.onend = () => setTimeout(done, 420);
+  u.onerror = () => setTimeout(done, 420);
+  window.speechSynthesis.speak(u);
+  return null;
 }
 
 function speak(text, lang){
@@ -665,16 +683,19 @@ function readAllLesson(){
     if (!lessonReading) return;
     if (i >= phrases.length){ stopLessonReading(); return; }
     cards().forEach((c, idx) => c.classList.toggle("reading", idx === i));
-    const u = makeUtterance(phrases[i].en, "en");
-    u.onend = () => { markHeard(i); i++; next(); };
-    u.onerror = () => { i++; next(); };
-    window.speechSynthesis.speak(u);
+    const idx = i;
+    lessonReadTimer = speakLineAndAdvance(phrases[idx].en, "en", () => {
+      markHeard(idx);
+      i++;
+      next();
+    });
   }
   next();
 }
 
 function stopLessonReading(){
   lessonReading = false;
+  if (lessonReadTimer){ clearTimeout(lessonReadTimer); lessonReadTimer = null; }
   try { window.speechSynthesis.cancel(); } catch (e) {}
   $("btnReadAll").textContent = "🔊 全篇朗读";
   const cards = $("cardList").querySelectorAll(".pcard");
@@ -849,6 +870,8 @@ const CLICK_VOL = 0.035;   // 节拍
 
 let audioCtx = null;
 let songTimers = [];   // 歌词高亮 / 收尾定时器
+let lessonReadTimer = null;  // 全篇朗读推进
+let songReadTimer = null;    // 儿歌逐句学词推进
 let songMode = "";     // "song"=完整歌  "melody"=只听曲子  "read"=逐句学词
 
 // 一键播放 = 一首完整的歌
@@ -1079,15 +1102,12 @@ function speakLyricLine(i){
   const lines = currentSong.lyrics;
   if (i >= lines.length){ stopSongPlay(); return; }
   highlightLyric(i);
-  const u = makeUtterance(lines[i].en, "en");
-  const advance = () => setTimeout(() => speakLyricLine(i + 1), 420);
-  u.onend = advance;
-  u.onerror = advance;
-  window.speechSynthesis.speak(u);
+  songReadTimer = speakLineAndAdvance(lines[i].en, "en", () => speakLyricLine(i + 1));
 }
 
 function stopSongPlay(){
   songPlaying = false;
+  if (songReadTimer){ clearTimeout(songReadTimer); songReadTimer = null; }
   stopMelody();
   try { window.speechSynthesis.cancel(); } catch (e) {}
   $("btnPlayAll").textContent = "▶ 完整播放";

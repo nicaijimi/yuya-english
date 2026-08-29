@@ -455,7 +455,16 @@ function openPage(id){
 }
 
 function closePage(id){
+  stopAllAudio();
   $("page-" + id).classList.remove("open");
+}
+
+// 统一清理：离开页面 / 切后台 / 锁屏时停掉所有声音，避免声音"跟着人跑"
+function stopAllAudio(){
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  if (typeof lessonReading !== "undefined" && lessonReading) stopLessonReading();
+  if (typeof songPlaying !== "undefined" && songPlaying) stopSongPlay();
+  if (typeof melodyPlaying !== "undefined" && melodyPlaying) stopMelody();
 }
 
 function renderHome(){
@@ -1153,6 +1162,9 @@ function init(){
     deferredPrompt = null;
     updateInstallButton();
   });
+  // 切后台 / 锁屏 / 来电话：停掉所有声音（iOS 锁屏下 visibilitychange 不一定触发，故补 pagehide）
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopAllAudio(); });
+  window.addEventListener("pagehide", () => stopAllAudio());
   refreshVoices();
   renderHome();
   renderSongs();

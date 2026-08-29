@@ -364,6 +364,13 @@ body{
   transition:background .2s,border-color .2s;
 }
 .lyric.active{background:var(--accent-soft);border-color:var(--accent)}
+/* 一键播放时逐句高亮，让孩子跟得上 */
+.lyric.speaking{
+  background:var(--accent-soft);
+  border-color:var(--accent);
+  transform:scale(1.02);
+  box-shadow:0 4px 14px rgba(0,0,0,.06);
+}
 .lyric .lyric-zh{display:block;font-size:12px;font-weight:400;color:var(--sub);margin-top:4px}
 
 .bear-wrap{display:flex;flex-direction:column;align-items:center;padding:22px 16px 6px}

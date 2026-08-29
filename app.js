@@ -344,11 +344,22 @@ function defaultState(){
     streak: { days: 0, lastDate: "" },
     lessons: {},
     stickers: [],
-    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "kid" }
+    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "cartoon", cartoonPreset: "tender" }
   };
 }
 
 let state = loadState();
+
+// 旧版本升级：老数据没有卡通音色设置，升级后直接启用（而不是继续用调尖的女声）
+(function migrateVoice(){
+  try {
+    const s = state.settings;
+    if (s && s.cartoonPreset === undefined){
+      s.cartoonPreset = "tender";
+      if (s.voiceStyle === "kid" || s.voiceStyle === undefined) s.voiceStyle = "cartoon";
+    }
+  } catch (e) {}
+})();
 
 function loadState(){
   try {
@@ -462,7 +473,35 @@ function makeUtterance(text, lang){
   return u;
 }
 
+// 卡通角色说话：按音节用共振峰合成，音高走语调曲线
+function speakCartoon(text, lang){
+  if (!("AudioContext" in window || "webkitAudioContext" in window)) return false;
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  stopMelody();
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const preset = CARTOON_PRESETS[state.settings.cartoonPreset] || CARTOON_PRESETS.tender;
+  const sylls = syllablesOfLine(text);
+  if (!sylls.length) return false;
+  const isQuestion = /\?\s*$/.test(text.trim());
+  let t = audioCtx.currentTime + 0.05;
+  const total = sylls.length;
+  sylls.forEach((v, i) => {
+    const p = total > 1 ? i / (total - 1) : 0;
+    // 疑问句句尾上扬，陈述句缓降；句首略高更显稚嫩
+    const curve = isQuestion ? (1 + p * preset.tilt) : (1 + preset.tilt * 0.4 - p * preset.tilt);
+    const dur = preset.syl;
+    singNote(preset.base * curve, t, dur * 0.9, 0.50, v, 0.004);
+    t += dur + 0.028;
+  });
+  return true;
+}
+
 function speak(text, lang){
+  // 卡通角色：英文句子用共振峰合成配音（中文解释保持清晰发音，方便大人听懂）
+  if ((state.settings.voiceStyle || "kid") === "cartoon" && lang !== "zh"){
+    if (speakCartoon(text, lang)) return true;
+  }
   if (!("speechSynthesis" in window)) return false;
   try { window.speechSynthesis.cancel(); } catch (e) {}
   const u = makeUtterance(text, lang || "en");
@@ -784,8 +823,29 @@ let songPlaying = false;
 
 // ===== 一键播放：有旋律就「旋律伴奏 + 朗读歌词」一起播，没有旋律就直接朗读 =====
 // ===== 儿歌：完整一首歌（童声演唱 + 贝斯 + 节拍）=====
-// 童声元音「啊」的三段共振峰，比成人高约 15%，听着像小孩
-const FORMANT_A = [880, 1280, 3100];
+// ===== 童声音色参数 =====
+// 元音共振峰 F1/F2/F3：成人标准测量值 ×1.2（幼儿声道短，共振峰整体偏高）
+const VOWELS = {
+  a: [876, 1308, 2928],
+  e: [636, 2208, 2976],
+  i: [324, 2748, 3612],
+  o: [684, 1008, 2892],
+  u: [360, 1044, 2688]
+};
+// 卡通角色说话的音色预设：base=基频(Hz)，syl=每音节时长(秒)，tilt=语调起伏
+const CARTOON_PRESETS = {
+  tender: { base: 335, syl: 0.170, tilt: 0.18 },   // 稚嫩：音高偏高的小小孩
+  soft:   { base: 298, syl: 0.215, tilt: 0.12 },   // 柔和：语速慢，安抚感
+  lively: { base: 368, syl: 0.150, tilt: 0.32 }    // 活泼：语调起伏大
+};
+const FORMANT_GAIN = [1, 0.5, 0.22];   // 第一共振峰能量最强
+// Q 值实测：Q=7/11/15 只保留 18~23% 能量（童声被伴奏盖过），
+// 放宽到 4/6/8 可保留约 30%，音色也更饱满
+const FORMANT_Q = [4, 6, 8];
+// 音量同样按实测补偿：滤波吃掉约 70% 能量，故设定值需放大
+const VOICE_VOL = 0.55;    // 童声主唱（补偿后实际听感约为原来的 3 倍）
+const BASS_VOL  = 0.045;   // 贝斯让位给童声
+const CLICK_VOL = 0.035;   // 节拍
 
 let audioCtx = null;
 let songTimers = [];   // 歌词高亮 / 收尾定时器
@@ -832,22 +892,33 @@ function playSong(withVoice){
   let t = start;
 
   const totalBeats = phrases.reduce((a, ph) => a + ph.reduce((x, n) => x + n[1], 0), 0);
-  for (let b = 0; b < totalBeats; b++) playClick(start + b * beat, 0.04);
+  for (let b = 0; b < totalBeats; b++) playClick(start + b * beat, CLICK_VOL);
 
   phrases.forEach((phrase, pi) => {
     const phraseDur = phrase.reduce((a, n) => a + n[1], 0) * beat;
     const root = NOTE_FREQ[phrase[0][0]];
-    if (root) playBass(root / 2, t, phraseDur * 0.95, 0.07);
+    if (root) playBass(root / 2, t, phraseDur * 0.95, BASS_VOL);
     songTimers.push(setTimeout(() => highlightLyric(pi), Math.max((t - base) * 1000, 0)));
+
+    // 先算出本乐句每个音符的绝对时间
+    const notes = [];
+    let pt = t;
     phrase.forEach(([note, beats]) => {
       const dur = beats * beat;
-      const f = NOTE_FREQ[note];
-      if (f){
-        if (withVoice) singNote(f, t, dur * 0.9, 0.17);
-        else toneNote(f, t, dur * 0.9, 0.20);
-      }
-      t += dur;
+      notes.push({ f: NOTE_FREQ[note], start: pt, dur: dur });
+      pt += dur;
     });
+
+    if (withVoice){
+      // 童声按歌词的元音唱，听起来像在唱词而不是一路「啊」
+      const sylls = syllablesOfLine(currentSong.lyrics[pi].en);
+      mapSyllablesToNotes(sylls, notes).forEach((s) => {
+        if (s.f) singNote(s.f, s.start, s.dur * 0.92, VOICE_VOL, s.vowel);
+      });
+    } else {
+      notes.forEach((n) => { if (n.f) toneNote(n.f, n.start, n.dur * 0.9, 0.20); });
+    }
+    t = pt;
   });
 
   songTimers.push(setTimeout(() => stopSongPlay(), (t - base) * 1000 + 600));
@@ -859,39 +930,93 @@ function highlightLyric(i){
   els.forEach((el, idx) => el.classList.toggle("speaking", idx === i));
 }
 
-// 童声：锯齿波声源 → 三段共振峰滤波 → 颤音 + 包络
-function singNote(freq, t0, dur, vol){
+// 童声：锯齿波声源 → 三段共振峰滤波（元音决定音色）→ 颤音 + 包络
+function singNote(freq, t0, dur, vol, vowel, vibDepth){
   if (!audioCtx || dur < 0.06) return;
+  const F = VOWELS[vowel] || VOWELS.a;
   const osc = audioCtx.createOscillator();
   osc.type = "sawtooth";
   osc.frequency.value = freq;
 
   const vib = audioCtx.createOscillator();
-  vib.frequency.value = 5.4;
+  vib.frequency.value = 5.6;
   const vibAmt = audioCtx.createGain();
-  vibAmt.gain.value = freq * 0.011;
+  vibAmt.gain.value = freq * (vibDepth == null ? 0.012 : vibDepth);
   vib.connect(vibAmt); vibAmt.connect(osc.frequency);
 
   const mix = audioCtx.createGain();
-  FORMANT_A.forEach((f, i) => {
+  F.forEach((f, i) => {
     const bp = audioCtx.createBiquadFilter();
     bp.type = "bandpass";
     bp.frequency.value = f;
-    bp.Q.value = 7 + i * 4;
+    bp.Q.value = FORMANT_Q[i];
     const g = audioCtx.createGain();
-    g.gain.value = [1, 0.45, 0.18][i];
+    g.gain.value = FORMANT_GAIN[i];
     osc.connect(bp); bp.connect(g); g.connect(mix);
   });
 
   const env = audioCtx.createGain();
   env.gain.setValueAtTime(0.0001, t0);
-  env.gain.exponentialRampToValueAtTime(vol, t0 + 0.055);
-  env.gain.setValueAtTime(vol, t0 + dur * 0.7);
+  env.gain.exponentialRampToValueAtTime(vol, t0 + 0.05);
+  env.gain.setValueAtTime(vol, t0 + dur * 0.72);
   env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   mix.connect(env); env.connect(audioCtx.destination);
 
   osc.start(t0); osc.stop(t0 + dur);
   vib.start(t0); vib.stop(t0 + dur);
+}
+
+// 把一句歌词拆成音节（每个音节取核心元音），让童声能"唱出词"
+function syllablesOfLine(line){
+  const words = line.toLowerCase().replace(/[^a-z\s']/g, " ").split(/\s+/).filter(Boolean);
+  const out = [];
+  words.forEach((w) => {
+    const groups = w.match(/[aeiouy]+/g);
+    if (!groups){ out.push("a"); return; }
+    groups.forEach((g) => out.push(vowelOfGroup(g)));
+  });
+  return out;
+}
+
+// 元音字母组合 → 最接近的元音音素
+function vowelOfGroup(g){
+  if (g.indexOf("oo") >= 0 || g.indexOf("ou") >= 0) return "u";
+  if (g.indexOf("oa") >= 0 || g.indexOf("ow") >= 0) return "o";
+  if (g.indexOf("ee") >= 0 || g.indexOf("ie") >= 0 || g.indexOf("ea") >= 0) return "i";
+  if (g.indexOf("ai") >= 0 || g.indexOf("ay") >= 0) return "a";
+  if (g.indexOf("u") >= 0) return "u";
+  if (g.indexOf("o") >= 0) return "o";
+  if (g.indexOf("i") >= 0 || g.indexOf("y") >= 0) return "i";
+  if (g.indexOf("e") >= 0) return "e";
+  return "a";
+}
+
+// 把音节分配到音符上：音节少则一个音节拖几个音，音节多则一个音挤几个音节
+function mapSyllablesToNotes(sylls, notes){
+  if (!notes.length) return [];
+  if (!sylls.length) return notes.map((n) => ({ f: n.f, start: n.start, dur: n.dur, vowel: "a" }));
+  const out = [];
+  if (sylls.length <= notes.length){
+    const per = notes.length / sylls.length;
+    sylls.forEach((v, i) => {
+      const from = Math.floor(i * per);
+      const to = Math.max(Math.floor((i + 1) * per), from + 1);
+      const seg = notes.slice(from, Math.min(to, notes.length));
+      if (!seg.length) return;
+      out.push({ vowel: v, f: seg[0].f, start: seg[0].start, dur: seg.reduce((a, x) => a + x.dur, 0) });
+    });
+  } else {
+    const per = sylls.length / notes.length;
+    notes.forEach((n, i) => {
+      const from = Math.floor(i * per);
+      const to = Math.max(Math.floor((i + 1) * per), from + 1);
+      const group = sylls.slice(from, Math.min(to, sylls.length));
+      if (!group.length) return;
+      const d = n.dur / group.length;
+      group.forEach((v, j) => out.push({ vowel: v, f: n.f, start: n.start + j * d, dur: d }));
+    });
+  }
+  return out;
 }
 
 // 纯乐器音色
@@ -1232,9 +1357,17 @@ function renderProfile(){
   }).join("");
   $("rateSlow").classList.toggle("active", state.settings.rate === "slow");
   $("rateNormal").classList.toggle("active", state.settings.rate === "normal");
-  const kid = (state.settings.voiceStyle || "kid") === "kid";
-  $("styleKid").classList.toggle("active", kid);
-  $("styleStd").classList.toggle("active", !kid);
+  const style = state.settings.voiceStyle || "kid";
+  $("styleCartoon").classList.toggle("active", style === "cartoon");
+  $("styleKid").classList.toggle("active", style === "kid");
+  $("styleStd").classList.toggle("active", style === "std");
+  const isCartoon = style === "cartoon";
+  $("rowCartoonPreset").style.display = isCartoon ? "" : "none";
+  $("cartoonHint").style.display = isCartoon ? "" : "none";
+  const cp = state.settings.cartoonPreset || "tender";
+  $("cpTender").classList.toggle("active", cp === "tender");
+  $("cpSoft").classList.toggle("active", cp === "soft");
+  $("cpLively").classList.toggle("active", cp === "lively");
   $("about").textContent = "语芽 · 亲子英语启蒙\n" + LESSONS.length + " 个场景 · " + LESSONS.reduce((n, l) => n + l.phrases.length, 0) + " 个亲子句子 · " + SONGS.length + " 首经典童谣\n数据只保存在本机浏览器，不会上传";
   refreshVoices();
   updateInstallButton();
@@ -1300,8 +1433,13 @@ function wireEvents(){
 
   $("rateSlow").addEventListener("click", () => { state.settings.rate = "slow"; saveState(); renderProfile(); });
   $("rateNormal").addEventListener("click", () => { state.settings.rate = "normal"; saveState(); renderProfile(); });
-  $("styleKid").addEventListener("click", () => { state.settings.voiceStyle = "kid"; saveState(); renderProfile(); });
-  $("styleStd").addEventListener("click", () => { state.settings.voiceStyle = "std"; saveState(); renderProfile(); });
+  $("styleCartoon").addEventListener("click", () => { state.settings.voiceStyle = "cartoon"; saveState(); renderProfile(); speak("Hello!", "en"); });
+  $("styleKid").addEventListener("click", () => { state.settings.voiceStyle = "kid"; saveState(); renderProfile(); speak("Hello!", "en"); });
+  $("styleStd").addEventListener("click", () => { state.settings.voiceStyle = "std"; saveState(); renderProfile(); speak("Hello!", "en"); });
+  ["tender", "soft", "lively"].forEach((k) => {
+    const el = $("cp" + k.charAt(0).toUpperCase() + k.slice(1));
+    if (el) el.addEventListener("click", () => { state.settings.cartoonPreset = k; saveState(); renderProfile(); speak("Hello!", "en"); });
+  });
   $("voiceSelect").addEventListener("change", (e) => { state.settings.voiceURI = e.target.value; saveState(); });
   $("voiceSelectZh").addEventListener("change", (e) => { state.settings.voiceURIzh = e.target.value; saveState(); });
   $("btnInstall").addEventListener("click", async () => {

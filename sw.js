@@ -1,4 +1,4 @@
-const CACHE = "mbe-v3";
+const CACHE = "mbe-v4";
 const ASSETS = [
   "./",
   "./index.html",

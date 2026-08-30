@@ -344,7 +344,7 @@ function defaultState(){
     streak: { days: 0, lastDate: "" },
     lessons: {},
     stickers: [],
-    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "kid", cartoonPreset: "soft" }
+    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "std", cartoonPreset: "soft" }
   };
 }
 
@@ -356,7 +356,8 @@ let state = loadState();
     const s = state.settings;
     if (s){
       if (s.cartoonPreset === undefined) s.cartoonPreset = "soft";
-      if (s.voiceStyle === "cartoon") s.voiceStyle = "kid";
+      // 只保留成人温柔女声：旧的童声/卡通音色统一切回标准音（之前 1.6 音调偏尖硬）
+      if (s.voiceStyle === "cartoon" || s.voiceStyle === "kid") s.voiceStyle = "std";
     }
   } catch (e) {}
 })();
@@ -451,7 +452,7 @@ function pickVoice(lang){
     const hit = pool.find((v) => v.voiceURI === saved);
     if (hit) return hit;
   }
-  const enPref = ["Google US English", "Samantha", "Microsoft Aria", "Microsoft Zira", "Microsoft Jenny", "Daniel", "Karen"];
+  const enPref = ["Samantha", "Google US English", "Microsoft Aria", "Microsoft Zira", "Microsoft Jenny", "Karen", "Daniel"];
   const zhPref = ["Ting-Ting", "Sin-ji", "Google 普通话", "Google 國語", "Microsoft Xiaoxiao", "Microsoft Huihui", "Microsoft Yaoyao", "Meijia"];
   const pref = lang === "zh" ? zhPref : enPref;
   for (const name of pref){
@@ -466,10 +467,10 @@ function makeUtterance(text, lang){
   u.lang = lang === "zh" ? "zh-CN" : "en-US";
   const v = pickVoice(lang);
   if (v) u.voice = v;
-  u.rate = lang === "en" ? (state.settings.rate === "slow" ? 0.72 : 0.95) : 1;
-  // 童声模式：浏览器本地 TTS 没有真正的儿童发音人，用提高音调来接近小朋友的声音
-  const kid = (state.settings.voiceStyle || "kid") === "kid";
-  u.pitch = kid ? (lang === "zh" ? 1.5 : 1.6) : 1;
+  // 温柔女声：放慢语速、不再拔高音调（之前童声 1.6 偏尖硬）
+  const slow = state.settings.rate === "slow";
+  u.rate = lang === "en" ? (slow ? 0.8 : 1.0) : (slow ? 0.9 : 1.0);
+  u.pitch = 1.0;   // 成人女声自然音高，柔和
   return u;
 }
 
@@ -491,7 +492,7 @@ function speakCartoon(text, lang){
     // 疑问句句尾上扬，陈述句缓降；句首略高更显稚嫩
     const curve = isQuestion ? (1 + p * preset.tilt) : (1 + preset.tilt * 0.4 - p * preset.tilt);
     const dur = preset.syl;
-    singNote(preset.base * curve, t, dur * 0.9, 0.50, v, 0.004);
+    singNote(preset.base * curve, t, dur * 0.9, 0.50, v, "", 0.004);
     t += dur + 0.028;
   });
   return true;
@@ -864,7 +865,7 @@ const FORMANT_GAIN = [1, 0.5, 0.22];   // 第一共振峰能量最强
 // 放宽到 4/6/8 可保留约 30%，音色也更饱满
 const FORMANT_Q = [4, 6, 8];
 // 音量同样按实测补偿：滤波吃掉约 70% 能量，故设定值需放大
-const VOICE_VOL = 0.55;    // 童声主唱（补偿后实际听感约为原来的 3 倍）
+const VOICE_VOL = 0.6;     // 主唱（共振峰+低通会吃掉部分能量，故设定值需放大）
 const BASS_VOL  = 0.045;   // 贝斯让位给童声
 const CLICK_VOL = 0.035;   // 节拍
 
@@ -880,7 +881,7 @@ function playAllSong(){
   if (songPlaying && songMode === "song"){ stopSongPlay(); return; }
   stopSongPlay();
   if (!currentSong.melody){ startReadLyrics(); return; }
-  if (playSong(false)){
+  if (playSong(true)){
     songMode = "song";
     songPlaying = true;
     $("btnPlayAll").textContent = "⏹ 停止";
@@ -933,10 +934,10 @@ function playSong(withVoice){
     });
 
     if (withVoice){
-      // 童声按歌词的元音唱，听起来像在唱词而不是一路「啊」
-      const sylls = syllablesOfLine(currentSong.lyrics[pi].en);
+      // 童声按歌词的「辅音+元音」唱出旋律，配合贝斯与节拍，像真在唱英文歌
+      const sylls = syllablesDetailed(currentSong.lyrics[pi].en);
       mapSyllablesToNotes(sylls, notes).forEach((s) => {
-        if (s.f) singNote(s.f, s.start, s.dur * 0.92, VOICE_VOL, s.vowel);
+        if (s.f) singNote(s.f, s.start, s.dur * 0.92, VOICE_VOL, s.vowel, s.onset);
       });
     } else {
       notes.forEach((n) => { if (n.f) toneNote(n.f, n.start, n.dur * 0.9, 0.20); });
@@ -953,18 +954,32 @@ function highlightLyric(i){
   els.forEach((el, idx) => el.classList.toggle("speaking", idx === i));
 }
 
-// 童声：锯齿波声源 → 三段共振峰滤波（元音决定音色）→ 颤音 + 包络
-function singNote(freq, t0, dur, vol, vowel, vibDepth){
+// 唱歌用的元音共振峰（成人女声，频率按女性声道略高，音色更柔）
+const SING_VOWELS = {
+  a: [800, 1150, 2900],
+  e: [550, 2000, 2550],
+  i: [300, 2500, 3300],
+  o: [450, 800, 2830],
+  u: [325, 700, 2530]
+};
+const SING_FORMANT_Q = [5, 7, 9];        // 稍高 Q，元音更清晰
+const SING_FORMANT_GAIN = [1, 0.6, 0.3];
+
+// 唱歌：锯齿波经低通柔化 → 三段共振峰（元音决定音色）→ 颤音 + 包络；句首加轻辅音提升可懂度
+function singNote(freq, t0, dur, vol, vowel, onset, vibDepth){
   if (!audioCtx || dur < 0.06) return;
-  const F = VOWELS[vowel] || VOWELS.a;
+  const F = SING_VOWELS[vowel] || SING_VOWELS.a;
   const osc = audioCtx.createOscillator();
   osc.type = "sawtooth";
   osc.frequency.value = freq;
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = "lowpass"; lp.frequency.value = 3200;   // 柔化刺耳高频
+  osc.connect(lp);
 
   const vib = audioCtx.createOscillator();
-  vib.frequency.value = 5.6;
+  vib.frequency.value = 5.5;
   const vibAmt = audioCtx.createGain();
-  vibAmt.gain.value = freq * (vibDepth == null ? 0.012 : vibDepth);
+  vibAmt.gain.value = freq * (vibDepth == null ? 0.01 : vibDepth);
   vib.connect(vibAmt); vibAmt.connect(osc.frequency);
 
   const mix = audioCtx.createGain();
@@ -972,24 +987,48 @@ function singNote(freq, t0, dur, vol, vowel, vibDepth){
     const bp = audioCtx.createBiquadFilter();
     bp.type = "bandpass";
     bp.frequency.value = f;
-    bp.Q.value = FORMANT_Q[i];
+    bp.Q.value = SING_FORMANT_Q[i];
     const g = audioCtx.createGain();
-    g.gain.value = FORMANT_GAIN[i];
-    osc.connect(bp); bp.connect(g); g.connect(mix);
+    g.gain.value = SING_FORMANT_GAIN[i];
+    lp.connect(bp); bp.connect(g); g.connect(mix);
   });
 
   const env = audioCtx.createGain();
   env.gain.setValueAtTime(0.0001, t0);
   env.gain.exponentialRampToValueAtTime(vol, t0 + 0.05);
-  env.gain.setValueAtTime(vol, t0 + dur * 0.72);
+  env.gain.setValueAtTime(vol, t0 + dur * 0.7);
   env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   mix.connect(env); env.connect(audioCtx.destination);
 
   osc.start(t0); osc.stop(t0 + dur);
   vib.start(t0); vib.stop(t0 + dur);
+
+  if (onset) playConsonant(onset, t0, Math.min(0.07, dur * 0.45));
 }
 
-// 把一句歌词拆成音节（每个音节取核心元音），让童声能"唱出词"
+// 轻辅音：短促滤波噪声，让"唱歌"能听出词的首音（b/p/t/d/k/s/m/n/l…）
+function playConsonant(c, t0, dur){
+  if (!audioCtx) return;
+  const isFric = "sfxhz".indexOf(c) !== -1;
+  const isNasal = "mn".indexOf(c) !== -1;
+  const len = Math.max(1, Math.ceil(audioCtx.sampleRate * dur));
+  const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource(); src.buffer = buf;
+  const f = audioCtx.createBiquadFilter();
+  if (isFric){ f.type = "highpass"; f.frequency.value = 3000; }
+  else if (isNasal){ f.type = "bandpass"; f.frequency.value = 260; f.Q.value = 3; }
+  else { f.type = "bandpass"; f.frequency.value = 1500; f.Q.value = 1.2; }
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(f); f.connect(g); g.connect(audioCtx.destination);
+  src.start(t0); src.stop(t0 + dur);
+}
+
+// 把一句歌词拆成音节（每个音节取核心元音），便于卡通合成（已停用）沿用
 function syllablesOfLine(line){
   const words = line.toLowerCase().replace(/[^a-z\s']/g, " ").split(/\s+/).filter(Boolean);
   const out = [];
@@ -997,6 +1036,22 @@ function syllablesOfLine(line){
     const groups = w.match(/[aeiouy]+/g);
     if (!groups){ out.push("a"); return; }
     groups.forEach((g) => out.push(vowelOfGroup(g)));
+  });
+  return out;
+}
+
+// 拆成「首辅音 + 元音」结构，让唱歌能听出每个词的首音
+function syllablesDetailed(line){
+  const words = line.toLowerCase().replace(/[^a-z\s']/g, " ").split(/\s+/).filter(Boolean);
+  const out = [];
+  words.forEach((w) => {
+    const parts = w.match(/([bcdfghjklmnpqrstvwxyz]*)([aeiouy]+)/g);
+    if (!parts){ out.push({ onset: "", vowel: "a" }); return; }
+    parts.forEach((m) => {
+      const mm = m.match(/^([bcdfghjklmnpqrstvwxyz]*)([aeiouy]+)$/);
+      if (!mm){ out.push({ onset: "", vowel: vowelOfGroup(m) }); return; }
+      out.push({ onset: mm[1], vowel: vowelOfGroup(mm[2]) });
+    });
   });
   return out;
 }
@@ -1014,29 +1069,30 @@ function vowelOfGroup(g){
   return "a";
 }
 
-// 把音节分配到音符上：音节少则一个音节拖几个音，音节多则一个音挤几个音节
+// 把音节（{onset, vowel} 或纯元音串）分配到音符：少则拖长，多则挤进同音
 function mapSyllablesToNotes(sylls, notes){
   if (!notes.length) return [];
-  if (!sylls.length) return notes.map((n) => ({ f: n.f, start: n.start, dur: n.dur, vowel: "a" }));
+  const norm = sylls.map((s) => (typeof s === "string" ? { onset: "", vowel: s } : s));
+  if (!norm.length) return notes.map((n) => ({ f: n.f, start: n.start, dur: n.dur, vowel: "a", onset: "" }));
   const out = [];
-  if (sylls.length <= notes.length){
-    const per = notes.length / sylls.length;
-    sylls.forEach((v, i) => {
+  if (norm.length <= notes.length){
+    const per = notes.length / norm.length;
+    norm.forEach((s, i) => {
       const from = Math.floor(i * per);
       const to = Math.max(Math.floor((i + 1) * per), from + 1);
       const seg = notes.slice(from, Math.min(to, notes.length));
       if (!seg.length) return;
-      out.push({ vowel: v, f: seg[0].f, start: seg[0].start, dur: seg.reduce((a, x) => a + x.dur, 0) });
+      out.push({ vowel: s.vowel, onset: s.onset, f: seg[0].f, start: seg[0].start, dur: seg.reduce((a, x) => a + x.dur, 0) });
     });
   } else {
-    const per = sylls.length / notes.length;
+    const per = norm.length / notes.length;
     notes.forEach((n, i) => {
       const from = Math.floor(i * per);
       const to = Math.max(Math.floor((i + 1) * per), from + 1);
-      const group = sylls.slice(from, Math.min(to, sylls.length));
+      const group = norm.slice(from, Math.min(to, norm.length));
       if (!group.length) return;
       const d = n.dur / group.length;
-      group.forEach((v, j) => out.push({ vowel: v, f: n.f, start: n.start + j * d, dur: d }));
+      group.forEach((s, j) => out.push({ vowel: s.vowel, onset: s.onset, f: n.f, start: n.start + j * d, dur: d }));
     });
   }
   return out;
@@ -1377,12 +1433,11 @@ function renderProfile(){
   }).join("");
   $("rateSlow").classList.toggle("active", state.settings.rate === "slow");
   $("rateNormal").classList.toggle("active", state.settings.rate === "normal");
-  const style = state.settings.voiceStyle || "kid";
-  $("styleKid").classList.toggle("active", style === "kid");
+  const style = state.settings.voiceStyle || "std";
+  // 只保留温柔成人女声，童声/卡通入口隐藏
+  const kidBtn = $("styleKid"); if (kidBtn) kidBtn.style.display = "none";
+  const cartoonBtn = $("styleCartoon"); if (cartoonBtn) cartoonBtn.style.display = "none";
   $("styleStd").classList.toggle("active", style === "std");
-  // 卡通合成音色可懂度不达标，暂不开放，相关入口隐藏
-  const cartoonBtn = $("styleCartoon");
-  if (cartoonBtn) cartoonBtn.style.display = "none";
   $("rowCartoonPreset").style.display = "none";
   $("cartoonHint").style.display = "none";
   $("about").textContent = "语芽 · 亲子英语启蒙\n" + LESSONS.length + " 个场景 · " + LESSONS.reduce((n, l) => n + l.phrases.length, 0) + " 个亲子句子 · " + SONGS.length + " 首经典童谣\n数据只保存在本机浏览器，不会上传";

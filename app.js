@@ -344,19 +344,19 @@ function defaultState(){
     streak: { days: 0, lastDate: "" },
     lessons: {},
     stickers: [],
-    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "cartoon", cartoonPreset: "soft" }
+    settings: { rate: "slow", voiceURI: "", voiceURIzh: "", voiceStyle: "kid", cartoonPreset: "soft" }
   };
 }
 
 let state = loadState();
 
-// 旧版本升级：老数据没有卡通音色设置，升级后直接启用（而不是继续用调尖的女声）
+// 旧版本升级：卡通合成音色因可懂度不达标已下线，已启用的用户回到童声
 (function migrateVoice(){
   try {
     const s = state.settings;
-    if (s && s.cartoonPreset === undefined){
-      s.cartoonPreset = "soft";
-      if (s.voiceStyle === "kid" || s.voiceStyle === undefined) s.voiceStyle = "cartoon";
+    if (s){
+      if (s.cartoonPreset === undefined) s.cartoonPreset = "soft";
+      if (s.voiceStyle === "cartoon") s.voiceStyle = "kid";
     }
   } catch (e) {}
 })();
@@ -880,7 +880,7 @@ function playAllSong(){
   if (songPlaying && songMode === "song"){ stopSongPlay(); return; }
   stopSongPlay();
   if (!currentSong.melody){ startReadLyrics(); return; }
-  if (playSong(true)){
+  if (playSong(false)){
     songMode = "song";
     songPlaying = true;
     $("btnPlayAll").textContent = "⏹ 停止";
@@ -1133,9 +1133,9 @@ function openSong(id){
   $("songSub").textContent = currentSong.sub;
   $("songLyrics").innerHTML = currentSong.lyrics.map((l) => '<div class="lyric">' + esc(l.en) + '<span class="lyric-zh">' + esc(l.zh) + "</span></div>").join("");
   const hasMelody = !!currentSong.melody;
-  $("btnPlayMelody").style.display = hasMelody ? "" : "none";
+  $("btnPlayMelody").style.display = "none";   // 与「完整播放」重复，暂时隐藏
   $("songNote").textContent = hasMelody
-    ? "完整播放：童声把这首唱一遍，配贝斯和节拍，歌词会跟着亮。想先学意思，点「逐句学词」。"
+    ? "完整播放：把这首完整演奏一遍（旋律+贝斯+节拍），歌词跟着亮。想听词怎么念，点「逐句学词」。"
     : "这首暂无曲调，用「逐句学词」听发音。";
   openPage("song");
 }
@@ -1378,16 +1378,13 @@ function renderProfile(){
   $("rateSlow").classList.toggle("active", state.settings.rate === "slow");
   $("rateNormal").classList.toggle("active", state.settings.rate === "normal");
   const style = state.settings.voiceStyle || "kid";
-  $("styleCartoon").classList.toggle("active", style === "cartoon");
   $("styleKid").classList.toggle("active", style === "kid");
   $("styleStd").classList.toggle("active", style === "std");
-  const isCartoon = style === "cartoon";
-  $("rowCartoonPreset").style.display = isCartoon ? "" : "none";
-  $("cartoonHint").style.display = isCartoon ? "" : "none";
-  const cp = state.settings.cartoonPreset || "tender";
-  $("cpTender").classList.toggle("active", cp === "tender");
-  $("cpSoft").classList.toggle("active", cp === "soft");
-  $("cpLively").classList.toggle("active", cp === "lively");
+  // 卡通合成音色可懂度不达标，暂不开放，相关入口隐藏
+  const cartoonBtn = $("styleCartoon");
+  if (cartoonBtn) cartoonBtn.style.display = "none";
+  $("rowCartoonPreset").style.display = "none";
+  $("cartoonHint").style.display = "none";
   $("about").textContent = "语芽 · 亲子英语启蒙\n" + LESSONS.length + " 个场景 · " + LESSONS.reduce((n, l) => n + l.phrases.length, 0) + " 个亲子句子 · " + SONGS.length + " 首经典童谣\n数据只保存在本机浏览器，不会上传";
   refreshVoices();
   updateInstallButton();
